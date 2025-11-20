@@ -8,6 +8,8 @@ export default function Hall() {
     <div>
       <h1>Hall</h1>
       <h2>Your Character: {character}</h2>
+      <h1 className="text-gold text-4xl">Tailwind Working</h1>
+
 
       <button onClick={() => navigate("/room/tabla")}>Tabla Room</button>
       <button onClick={() => navigate("/room/flute")}>Flute Room</button>
