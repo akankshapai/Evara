@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>India States Map - Enhanced UI</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f1f3f6;
+        }
+
+        #map {
+            height: 100vh;
+            width: calc(100% - 380px);
+            float: left;
+        }
+
+        /* Sidebar Styling */
+        #sidebar {
+            width: 380px;
+            height: 100vh;
+            background: #ffffff;
+            float: right;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            padding: 0;
+            transition: 0.4s ease;
+        }
+
+        #sidebar.hidden {
+            width: 0;
+            opacity: 0;
+        }
+
+        /* Sidebar Header */
+        #sidebar-header {
+            background: linear-gradient(135deg, #4a8bff, #6c4bff);
+            color: white;
+            padding: 18px 20px;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        #sidebar-content {
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: 0.4s ease;
+        }
+
+        #sidebar-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .state-image {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            margin-bottom: 15px;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 12px;
+            border-radius: 12px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .desc {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div id="sidebar">
+    <div id="sidebar-header">Select a State</div>
+    <div id="sidebar-content">
+        <p class="desc">Click on any state in the map to see details.</p>
+    </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+const map = L.map('map').setView([22.9734, 78.6569], 5);
+
+// Load basemap
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+}).addTo(map);
+
+// GEOJSON URL
+const indiaGeoJSONUrl = "https://raw.githubusercontent.com/geohacker/india/master/state/india_telengana.geojson";
+
+// Default styles
+function stateStyle() {
+    return {
+        fillColor: "#6ca0dc",
+        weight: 1,
+        opacity: 1,
+        color: "#ffffff",
+        fillOpacity: 0.75
+    };
+}
+
+// Hover Style
+function highlightStyle() {
+    return {
+        weight: 2,
+        color: "#000",
+        fillOpacity: 0.9
+    };
+}
+
+let selectedLayer = null;
+
+// SIDEBAR UPDATE
+function updateSidebar(name, desc, image, audio) {
+    document.getElementById("sidebar-header").innerHTML = name;
+
+    let content = `
+        <img src="${image}" class="state-image">
+        <div class="title">Traditional Music</div>
+        <p class="desc">${desc}</p>
+
+        <audio controls>
+            <source src="${audio}" type="audio/mpeg">
+        </audio>
+    `;
+
+    const sidebarContent = document.getElementById("sidebar-content");
+    sidebarContent.innerHTML = content;
+
+    // animate
+    setTimeout(() => sidebarContent.classList.add("visible"), 50);
+}
+
+// SAMPLE DATA
+const stateInfo = {
+    "Karnataka": {
+        desc: "Carnatic music, also known as Karnataka Sangeetha, is a classical music system from South India whose name is derived from the Sanskrit term Karnâtaka Sangîtam. While it is practiced across southern India (including Karnataka, Tamil Nadu, Andhra Pradesh, and Kerala), it is specifically associated with the state of Karnataka due to the historical Karnataka Empire and its role in the music's development. Purandara Dasa is revered as the Father of Karnataka Music",
+        img: "https://1.bp.blogspot.com/_9vbFLWt4Si4/TA-NsMRHCqI/AAAAAAAAAWU/VPI-JC3zj54/s400/purandara-dasaru.jpg",
+        audio: "https://github.com/akankshapai/Evara/raw/refs/heads/main/Veena%20Kinhal%20-%20Haratanaya%20Sree%20(4).mp3"
+    },
+    "Kerala": {
+        desc: "Sopana Sangeetham is a unique and ancient Kerala temple music tradition performed on the steps (sopana) leading to the inner sanctum. It is a devotional vocal art form that originated in temples and is characterized by simple, soulful melodies, and is considered a ritualistic offering to the deity. The music is often based on verses from Jayadeva's Gita Govinda, sung in Sanskrit, Malayalam, or a blend of both (Manipravalam).",
+        img: "https://keralahouseboat.com/wp-content/uploads/2024/05/edakka.jpg",
+        audio: "https://github.com/akankshapai/Evara/raw/refs/heads/main/indian-classical-flute-amp-tabla-140472.mp3"
+    },
+    "Tamil Nadu": {
+        desc: "Traditional music of Tamil Nadu includes Carnatic music, the classical form of South Indian music, and numerous folk traditions like Villupattu (bow song), Karagattam (pot dance), and Kavadi Aattam (devotional dance). The classical tradition has deep roots in ancient scriptures, while the folk traditions are often performed during festivals and celebrations. Three great composers from Tamil Nadu—Tyagaraja, Muthuswami Dikshitar, and Syama Sastri—are central figures in this tradition.",
+        img: "https://hinduismtoday.b-cdn.net/wp-content/uploads/2022/09/E19.jpg",
+        audio: "https://github.com/akankshapai/Evara/raw/refs/heads/main/Song-1%20Sarasangi.mp3"
+    },
+    "Punjab": {
+        desc: "Punjabi folk music is a vibrant tradition from the Punjab region, known for its lively rhythms and diverse forms like dhol, tappe, and boliyan. It is performed at social gatherings and festivals, and it encompasses famous folk romances such as Heer Ranjha and Mirza Sahiban. Instruments like the dhol and chimta are central, while dances like bhangra and giddha are performed to its music",
+        img: "https://www.utsavpedia.com/wp-content/uploads/2016/01/bhangra-dance.jpg",
+        audio: "https://github.com/akankshapai/Evara/raw/refs/heads/main/justbhangra2_-_uf_03__Dhol_Vajda_.mp3"
+    },
+    "Rajasthan":{
+        desc: "Traditional music of Rajasthan includes folk styles like Maand, Pabuji Ki Phach, and Panihari, and features popular songs such as Kesariya Balam and Ghoomar. The music often draws on themes of love, war, and devotion, and a wide variety of traditional instruments are used. Notable musician castes include the Langas and Manganiars.",
+        img: "http://www.manahotels.in/traveller/wp-content/uploads/2015/07/folk-music-1.jpg",
+        audio: "https://github.com/akankshapai/Evara/raw/refs/heads/main/RS-738-AC_SIDE_A.mp3"
+    },
+    "Assam":{
+        desc: "Assamese music includes diverse genres like Bihu, Kamrupiya Lokageet, and Goalpara Lokageet, often characterized by a unique descending scale. Key instruments are the dhol (drum), pepa (buffalo horn), and gogona (bamboo instrument). This music plays a vital role in festivals like Rongali Bihu and reflects the rich cultural heritage of the region.",
+        img: "https://i.pinimg.com/736x/76/66/0a/76660a107e0cd2e12a3e6263a8779206.jpg",
+        audio: "https://github.com/akankshapai/Evara/raw/refs/heads/main/anu-oi-ni-tom_(1).mp3"
+    },
+    "Manipur":{
+        desc: "Manipur folk music includes various forms, with styles such as Khullong Ishei for agricultural work, Pena Ishei accompanied by the Pena fiddle, and Khubaishei performed with clapping instead of instruments. Other types include devotional songs like Manohar Sai, ceremonial music, and dance forms like Pung Cholom and Dhol Cholom.",
+        img: "https://i.pinimg.com/736x/d0/47/0f/d0470fd34e07e87512e563017dab9521.jpg",
+        audio: "https://github.com/akankshapai/Evara/raw/refs/heads/main/02.05.%20Krishna%20Abhisar%20(Excerpt%20From%20Ras%20Ritual).mp3"
+    },
+    "Jammu and Kashmir":{
+        desc: "Traditional music of Jammu and Kashmir includes Chakri, a popular folk form for storytelling, and Sufiana Kalam, a classical genre with Persian and Indian roots. Other traditional forms are Ladishah, a satirical song, and Rouf, a dance-accompanied festival song. These are performed using instruments like the rabab, sarangi, harmonium, and santoor.",
+        img: "https://www.kashmironline.com/culture/images/Hafiz%20Nagma.jpg",
+        audio: "https://github.com/akankshapai/Evara/raw/refs/heads/main/47%20Kashmiri%20Music.mp3"
+    },
+    "Jharkhand":{
+        desc: "Traditional music of Jharkhand includes folk forms like Jhumar, Domkach, and Kurukh, which are often performed during festivals and social gatherings accompanied by instruments such as the Mandar, Nagara, and Banam. These musical traditions are integral to the state's vibrant culture, reflecting the life, beliefs, and heritage of its diverse communities.",
+        img: "https://topstoriesworld.com/image/png_20230508_210335_0000-ZwIl1ewBNJ.png",
+        audio: "https://github.com/akankshapai/Evara/raw/refs/heads/main/A%20%20%20Apetola%20rema.%20Raja...mp3"
+    },
+};
+
+// Load GEOJSON
+fetch(indiaGeoJSONUrl)
+    .then(r => r.json())
+    .then(data => {
+        L.geoJSON(data, {
+            style: stateStyle,
+            onEachFeature: function(feature, layer) {
+
+                const name = feature.properties.NAME_1 || feature.properties.state_name;
+
+                layer.on("mouseover", function() {
+                    layer.setStyle(highlightStyle());
+                });
+
+                layer.on("mouseout", function() {
+                    if (selectedLayer !== layer) layer.setStyle(stateStyle());
+                });
+
+                layer.on("click", function() {
+
+                    // Reset previous selection
+                    if (selectedLayer) selectedLayer.setStyle(stateStyle());
+                    selectedLayer = layer;
+
+                    layer.setStyle({
+                        fillColor: "#ff9b42",
+                        color: "#000",
+                        weight: 2,
+                        fillOpacity: 0.9
+                    });
+
+                    if (stateInfo[name]) {
+                        updateSidebar(
+                            name,
+                            stateInfo[name].desc,
+                            stateInfo[name].img,
+                            stateInfo[name].audio
+                        );
+                    } else {
+                        updateSidebar(name, "No information added yet.", "", "");
+                    }
+                });
+
+                layer.bindTooltip(name);
+            }
+        }).addTo(map);
+    });
+</script>
+
+</body>
+</html>
