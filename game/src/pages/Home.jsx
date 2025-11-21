@@ -47,7 +47,6 @@ export default function Home() {
 
       {/* MAIN OPTIONS */}
       <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6">
-
         {/* Swara Game */}
         <Link
           to="/play"
@@ -60,6 +59,19 @@ export default function Home() {
         </Link>
 
         {/* Learn Swaras */}
+        {/* Musical Match – Practice Partners */}
+<Link
+  to="/match"
+  className="no-underline bg-[#FFF9F0] border border-[#E7D8C5] rounded-3xl p-8 shadow-lg
+             hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer text-center group"
+>
+  <div className="text-4xl mb-3 group-hover:scale-110 transition">🎼</div>
+  <h2 className="text-2xl font-serif text-[#8B1E23] mb-2">Musical Match</h2>
+  <p className="text-[#3A2F2F]">
+    Find practice partners and collaborate through music.
+  </p>
+</Link>
+
         <Link
           to="/learn"
           className="no-underline bg-[#FFF9F0] border border-[#E7D8C5] rounded-3xl p-8 shadow-lg 
