@@ -1,60 +1,56 @@
-import { useParams, Link } from "react-router-dom";
-import { useState } from "react";
-import { lessons } from "../data/lessons";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function Level() {
-  const { instrument, levelId } = useParams();
-  const levelIndex = Number(levelId) - 1;
+  const { instrumentName, levelNumber } = useParams();
+  const navigate = useNavigate();
 
-  const lesson = lessons[instrument][levelIndex];
-  const [started, setStarted] = useState(false);
-
-  if (!lesson) return <div>Invalid level</div>;
+  const fixedName =
+    instrumentName.charAt(0).toUpperCase() + instrumentName.slice(1).toLowerCase();
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>
-        {lesson.title}
+    <div className="min-h-screen bg-[#FFF8EB] px-6 py-10" style={{ fontFamily: "Merriweather, serif" }}>
+      <h1 className="text-4xl font-bold text-[#8B1E23] text-center mb-6">
+        Level {levelNumber} – {fixedName}
       </h1>
 
-      {!started ? (
-        <div>
-          <img 
-            src="/guru.png" 
-            alt="Guru"
-            style={{ width: 120, marginBottom: 20 }}
-          />
+      <div className="bg-white p-6 rounded-2xl shadow-xl max-w-2xl mx-auto">
+        <h2 className="text-2xl font-semibold text-[#8B1E23]">
+          Instructions
+        </h2>
+        <p className="text-gray-700 mt-4 text-lg">
+          🎵 Sing or play the lesson you learned <br />
+          🎵 Keep your mic close <br />
+          🎵 Maintain pitch & rhythm
+        </p>
+      </div>
 
-          <h3>Guru Message</h3>
-          <p>{lesson.guruText}</p>
+      <div className="bg-[#FFF1D6] p-6 rounded-2xl mt-10 max-w-2xl mx-auto shadow-xl">
+        <h2 className="text-2xl font-semibold text-center text-[#8B1E23] mb-6">
+          Your Recording
+        </h2>
 
-          <p><strong>Audio Lesson:</strong></p>
-          <audio controls src={lesson.audio}></audio>
-
-          <br /><br />
-
-          <button onClick={() => setStarted(true)}>
-            Start Level
+        <div className="flex flex-col gap-4">
+          <button className="bg-[#8B1E23] text-white py-3 rounded-lg shadow-md">
+            🎙 Start Recording
           </button>
 
-          <br /><br />
-          <Link to={`/room/${instrument}`}>← Back to Room</Link>
-        </div>
-      ) : (
-        <div>
-          <h3>Now it’s your turn!</h3>
-          <p>Practice this level and when ready, upload your performance.</p>
-
-          <button>
-            <Link to={`/upload/${instrument}/${levelId}`}>
-              Go to Upload Performance
-            </Link>
+          <button className="bg-gray-800 text-white py-3 rounded-lg shadow-md">
+            ⏹ Stop Recording
           </button>
 
-          <br /><br />
-          <Link to={`/room/${instrument}`}>← Back to Room</Link>
+          <button className="bg-blue-700 text-white py-3 rounded-lg shadow-md">
+            ▶ Play Audio
+          </button>
+
+          <button className="bg-green-700 text-white py-3 rounded-lg shadow-md">
+            ⬆ Upload Audio
+          </button>
         </div>
-      )}
+      </div>
+
+      <button className="mt-10 w-full bg-[#8B1E23] text-white py-4 rounded-xl shadow-lg">
+        Submit for Grading →
+      </button>
     </div>
   );
 }
